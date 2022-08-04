@@ -15,12 +15,11 @@ class CustomFormatter(logging.Formatter):
     reset = "\x1b[0m"
 
     # Lines to format
-    format = "[%(levelname)-8s - %(asctime)-23s - %(name)-s] - %(message)-20s"
-    format_fileline = "- (%(filename)s:%(lineno)d)"
+    format = "%(asctime)s - %(name)s [%(levelname)s]: %(message)s"
 
     # Custom format dictionary
     FORMATS = {
-        logging.DEBUG: purple + format + format_fileline + reset,
+        logging.DEBUG: purple + format + reset,
         logging.INFO: green + format + reset,
         logging.WARNING: yellow + format + reset,
         logging.ERROR: red + format + reset,
@@ -83,3 +82,7 @@ class Logger:
         """Print critical error msg"""
         self.logger.critical(msg)
 
+
+if __name__ == "__main__":
+    logger = Logger(name="Prueba", debug=True)
+    logger.debug("Aquí funciona")

@@ -1,6 +1,9 @@
 import logging.config
 
 import logging
+import os
+
+from dotenv import load_dotenv
 
 
 class CustomFormatter(logging.Formatter):
@@ -15,7 +18,7 @@ class CustomFormatter(logging.Formatter):
     reset = "\x1b[0m"
 
     # Lines to format
-    format = "%(asctime)s - %(name)s [%(levelname)s]: %(message)s"
+    format = "%(asctime)s - %(levelname)s - %(message)s"
 
     # Custom format dictionary
     FORMATS = {
@@ -37,52 +40,59 @@ class Logger:
     """
     My custom Logger class
     """
-    def __init__(self, debug=False, name=""):
+    # Instantiate the formatter and retrieving logger
+    load_dotenv()
+    formatter = CustomFormatter()
 
-        # Instantiate the formatter and retrieving logger
-        self.formatter = CustomFormatter()
-        self.logger = logging.getLogger(name)
+    logger = logging.getLogger(__name__)
 
-        # Setting debug level
-        if debug:
-            self.logger.setLevel(logging.DEBUG)
-        else:
-            self.logger.setLevel(logging.INFO)
+    debug = bool(int(os.environ.get("DEBUG", 0)))
 
-        # Getting stream handler
-        self.ch = logging.StreamHandler()
+    # Setting debug level
+    if debug:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
 
-        # Setting SH debug lvl
-        if debug:
-            self.ch.setLevel(logging.DEBUG)
-        else:
-            self.ch.setLevel(logging.INFO)
+    # Getting stream handler
+    ch = logging.StreamHandler()
 
-        # Setting formatter and adding SH to logger
-        self.ch.setFormatter(self.formatter)
-        self.logger.addHandler(self.ch)
+    # Setting SH debug lvl
+    if debug:
+        ch.setLevel(logging.DEBUG)
+    else:
+        ch.setLevel(logging.INFO)
 
-    def debug(self, msg):
+    # Setting formatter and adding SH to logger
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+
+    @classmethod
+    def debug(cls, msg, module=__file__):
         """Print debug msg"""
-        self.logger.debug(msg)
+        cls.logger.debug(msg)
 
-    def info(self, msg):
+    @classmethod
+    def info(cls, msg):
         """Print info msg"""
-        self.logger.info(msg)
+        cls.logger.info(msg)
 
-    def warning(self, msg):
+    @classmethod
+    def warning(cls, msg):
         """Print warning msg"""
-        self.logger.warning(msg)
+        cls.logger.warning(msg)
 
-    def error(self, msg):
+    @classmethod
+    def error(cls, msg):
         """Print error msg"""
-        self.logger.error(msg)
+        cls.logger.error(msg)
 
-    def critical(self, msg):
+    @classmethod
+    def critical(cls, msg):
         """Print critical error msg"""
-        self.logger.critical(msg)
+        cls.logger.critical(msg)
 
 
 if __name__ == "__main__":
-    logger = Logger(name="Prueba", debug=True)
-    logger.debug("Aquí funciona")
+    Logger.debug("Aquí funciona")
+    Logger.info("Aquí va")

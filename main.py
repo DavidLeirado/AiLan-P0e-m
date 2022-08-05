@@ -7,6 +7,6 @@ if __name__ == "__main__":
 
     debug_mode = True if bool(int(os.environ.get("DEBUG", 0))) else False
 
-    logger = Logger(name="Main", debug=debug_mode)
-    logger.info("Application starting")
-    logger.debug("Debug mode: on!")
+    #logger = Logger(name="Main", debug=debug_mode)
+    Logger.info("Application starting")
+    Logger.debug("Debug mode: on!")

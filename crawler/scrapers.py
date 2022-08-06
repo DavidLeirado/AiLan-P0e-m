@@ -10,15 +10,26 @@ from dotenv import load_dotenv
 
 from utils.logger import Logger
 
+class PoesiasPage:
+    url_base = "https://www.poesi.as/"
+    s = requests.Session()
 
-class Poem:
+    @classmethod
+    def get_session(cls):
+        return cls.s
+
+    @classmethod
+    def get_url_base(cls):
+        return cls.url_base
+
+class Poem(PoesiasPage):
     """
     This class gets the poem
     """
 
-    def __init__(self, url, session):
-        self.url = url
-        self.s = session
+    def __init__(self, poem):
+        self.url = PoesiasPage.get_url_base() + "/" + poem
+        self.s = PoesiasPage.get_session()
 
         self.page = ""
         self.__get_page()
@@ -49,3 +60,9 @@ class Poem:
         :return:
         """
         return self.poem
+
+# class Author:
+#     """
+#     This class is instantiated for each author and retrieves each poem available
+#     """
+#     def __init__(self):

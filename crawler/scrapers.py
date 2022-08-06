@@ -88,7 +88,6 @@ class Author:
     def __get_author(self):
         bs = BeautifulSoup(self.page.text, "html.parser")
         self.author = bs.find("header").find("h1").text
-        print(self.author)
 
     def __get_poems(self):
         bs = BeautifulSoup(self.page.text, "html.parser")

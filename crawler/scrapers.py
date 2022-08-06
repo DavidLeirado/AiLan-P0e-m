@@ -22,7 +22,7 @@ class PoesiasPage:
         return cls.url_base
 
 
-class Poem(PoesiasPage):
+class Poem:
     """
     This class gets the poem
     """
@@ -97,4 +97,3 @@ class Author:
 
     def get_author_lines(self):
         return self.poems
-

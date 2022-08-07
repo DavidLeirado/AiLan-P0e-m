@@ -28,6 +28,12 @@ class PoesiasPage:
     def get_url_base(cls):
         return cls.url_base
 
+    @classmethod
+    def update_session(cls):
+        Logger.debug("Updating Session . . .")
+        sleep(10)
+        cls.s = requests.Session()
+        cls.s.headers['User-Agent'] = cls.agent
 
 class Poem:
     """
@@ -60,8 +66,10 @@ class Poem:
                 raise Exception("Invalid status code")
         except Exception as e:
             Logger.error(e)
-            sys.exit(1)
-        sleep(2)
+            PoesiasPage.update_session()
+            self.__get_page()
+            #sys.exit(1)
+        sleep(3)
 
     def __get_poem_from_page(self):
         """
@@ -125,7 +133,9 @@ class Author:
                 raise Exception("Invalid status code")
         except Exception as e:
             Logger.error(e)
-            sys.exit(1)
+            PoesiasPage.update_session()
+            self.__get_page()
+            # sys.exit(1)
 
     def __get_author(self):
         bs = BeautifulSoup(self.page.text, "html.parser")
@@ -179,7 +189,9 @@ class ScrapPoesia:
                 raise Exception("Invalid status code")
         except Exception as e:
             Logger.error(e)
-            sys.exit(1)
+            PoesiasPage.update_session()
+            self.__get_page()
+            # sys.exit(1)
 
     def __get_authors(self):
         bs = BeautifulSoup(self.page.text, "html.parser")

@@ -12,6 +12,10 @@ import requests
 from utils.logger import Logger
 from time import sleep
 import re
+from dotenv import load_dotenv
+
+# Loading dotenv
+load_dotenv()
 
 
 class PoesiasPage:
@@ -19,6 +23,8 @@ class PoesiasPage:
     url_base = "https://www.poesi.as/"
     s = requests.Session()
     s.headers['User-Agent'] = agent
+    # Separator for csv
+    sep = os.environ.get("SCRAPER_SEPARATOR")
 
     @classmethod
     def get_session(cls):
@@ -34,6 +40,7 @@ class PoesiasPage:
         sleep(10)
         cls.s = requests.Session()
         cls.s.headers['User-Agent'] = cls.agent
+
 
 class Poem:
     """
@@ -68,21 +75,23 @@ class Poem:
             Logger.error(e)
             PoesiasPage.update_session()
             self.__get_page()
-            #sys.exit(1)
-        sleep(3)
+            # sys.exit(1)
+        sleep(1)
 
     def __get_poem_from_page(self):
         """
         Gets poem text from raw page
         :return:
         """
-        bs = BeautifulSoup(self.page.text, "html.parser")
+        bs = BeautifulSoup(self.page.content.decode("utf-8", 'ignore'), "html.parser")
 
         try:
             self.poem = bs.find("div", attrs={"class": "poema"}).text.strip()
         except AttributeError:
-            self.poem = bs.find("td", attrs={"align": "left"}).text.strip()
-
+            try:
+                self.poem = bs.find("td", attrs={"align": "left"}).text.strip()
+            except Exception as e:
+                Logger.error(e)
 
         self.poem = re.sub(r"(?:\r)?\n(?:\r)?", "<SALTO>", self.poem)
         self.poem = re.sub(r"(?:<SALTO>){2}", "<SALTO>", self.poem)
@@ -97,7 +106,9 @@ class Poem:
         poem getter
         :return:
         """
-        return self.poem
+        sep = PoesiasPage.sep
+        poem = f"{self.poem_name}{sep}{self.poem}"
+        return poem
 
 
 class Author:
@@ -130,7 +141,7 @@ class Author:
                 Logger.warning(f"Error code from author: {scode}")
                 Logger.debug(self.page.headers)
                 Logger.debug(self.page.history)
-                raise Exception("Invalid status code")
+                raise Exception(f"Invalid status code: {scode}")
         except Exception as e:
             Logger.error(e)
             PoesiasPage.update_session()
@@ -138,7 +149,7 @@ class Author:
             # sys.exit(1)
 
     def __get_author(self):
-        bs = BeautifulSoup(self.page.text, "html.parser")
+        bs = BeautifulSoup(self.page.content.decode("utf-8", 'ignore'), "html.parser")
         try:
             self.author = bs.find("header").find("h1").text
         except AttributeError:
@@ -146,10 +157,11 @@ class Author:
         Logger.debug(f"Author: {self.author}")
 
     def __get_poems(self):
-        bs = BeautifulSoup(self.page.text, "html.parser")
+        bs = BeautifulSoup(self.page.content.decode("utf-8", 'ignore'), "html.parser")
 
         self.poems = bs.find_all("a", attrs={"target": "_top"})
-        self.poems = ["$".join((self.author, i.text, Poem(i["href"]).get_poem())) for i in self.poems if i.text != ""]
+        sep = PoesiasPage.sep
+        self.poems = [sep.join((self.author, Poem(i["href"]).get_poem())) for i in self.poems if i.text != ""]
 
     def get_author_lines(self):
         return self.poems
@@ -194,7 +206,7 @@ class ScrapPoesia:
             # sys.exit(1)
 
     def __get_authors(self):
-        bs = BeautifulSoup(self.page.text, "html.parser")
+        bs = BeautifulSoup(self.page.content.decode("utf-8", 'ignore'), "html.parser")
         self.authors = bs.find("select", attrs={"class": "borde1"}).find_all("option")
         self.authors = [i["value"] for i in self.authors if i["value"] != ""]
 
@@ -219,6 +231,6 @@ if __name__ == "__main__":
     # with open("./spanish_poems_dataset.csv", "r", encoding="utf8") as poemFile:
     #     print(poemFile.read())
     with open("./spanish_poems_dataset.csv", "wb") as poemFile:
-        headers = "Author$PoemTitle$Poem"
+        headers = f"Author{PoesiasPage.sep}PoemTitle{PoesiasPage.sep}Poem\n"
         poemFile.write(headers.encode("utf-8"))
     ScrapPoesia()

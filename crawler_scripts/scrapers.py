@@ -49,15 +49,15 @@ class Poem:
     This class gets the poem
     """
 
-    def __init__(self, poem):
-        self.url = PoesiasPage.get_url_base() + "/" + poem
+    def __init__(self):
         self.s = PoesiasPage.get_session()
 
         self.saver = DataSaver("./crawler_scripts/saves/spanish_poems_dataset.json")
         self.iterator = FileIterator("./crawler_scripts/saves/poems_urls_saves.json")
 
         self.page = ""
-        self.poem = {
+        self.poem = ""
+        self.poem_data = {
             "auth_name": "",
             "poem_title": "",
             "poem": ""
@@ -66,9 +66,68 @@ class Poem:
 
         for dic_data in self.iterator:
             url = PoesiasPage.get_url_base() + "/" + dic_data["poem_url"]
-            self.__get_poems_url(url)
-            self.__get_poems(dic_data["auth_name"])
+            self.__get_page(url)
+            self.__get_poem_from_page(dic_data["auth_name"], dic_data["poem_title"])
             sleep(1)
+            
+        self.saver.save(self.data)
+        self.data = []
+
+    def __get_page(self, url):
+        """
+        requests
+        :return:
+        """
+        try:
+            self.page = self.s.get(url, allow_redirects=False)
+            scode = self.page.status_code
+            if not scode == 200:
+                Logger.warning(f"Error code from poem: {scode}")
+                Logger.debug(self.page.headers)
+                Logger.debug(self.page.history)
+                raise Exception("Invalid status code")
+        except Exception as e:
+            Logger.error(e)
+            PoesiasPage.update_session()
+            self.__get_page(url)
+        sleep(1)
+
+    def __get_poem_from_page(self, auth, title):
+        """
+        Gets poem text from raw page
+        :return:
+        """
+        bs = BeautifulSoup(self.page.content.decode("utf-8", 'ignore'), "html.parser")
+
+        try:
+            poem = bs.find("div", attrs={"class": "poema"}).text.strip()
+        except AttributeError:
+            try:
+                poem = bs.find("td", attrs={"align": "left"}).text.strip()
+            except Exception as e:
+                Logger.error(e)
+                pass
+
+        try:
+            poem = re.sub(r"(?:\r)?\n(?:\r)?", "<SALTO>", poem)
+            poem = re.sub(r"(?:<SALTO>){2}", "<SALTO>", poem)
+
+            self.poem_data["auth_name"] = auth
+            self.poem_data["poem_title"] = title
+            self.poem_data["poem"] = poem
+
+            self.data.append(self.poem_data.copy())
+
+            if len(self.data) > 100:
+                self.saver.save(self.data)
+                self.data = []
+            Logger.debug(f"Poem: {title}")
+
+        except Exception as e:
+            Logger.error(e)
+            pass
+
+
 
 
 

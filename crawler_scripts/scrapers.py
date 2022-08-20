@@ -64,14 +64,24 @@ class Poem:
         }
         self.data = []
 
-        for dic_data in self.iterator:
-            url = PoesiasPage.get_url_base() + "/" + dic_data["poem_url"]
-            self.__get_page(url)
-            self.__get_poem_from_page(dic_data["auth_name"], dic_data["poem_title"])
-            sleep(1)
-            
-        self.saver.save(self.data)
-        self.data = []
+        try:
+            for dic_data in self.iterator:
+                url = PoesiasPage.get_url_base() + "/" + dic_data["poem_url"]
+                self.__get_page(url)
+                self.__get_poem_from_page(dic_data["auth_name"], dic_data["poem_title"])
+                sleep(1)
+
+        except KeyboardInterrupt:
+            Logger.info("Program stopped. Graceful stopping...")
+            self.saver.save(self.data)
+            self.data = []
+            sys.exit(2)
+        except Exception as e:
+            Logger.error(e)
+
+        finally:
+            self.saver.save(self.data)
+            self.data = []
 
     def __get_page(self, url):
         """
@@ -128,9 +138,6 @@ class Poem:
             pass
 
 
-
-
-
 class ScrapPoemsURLs:
     """
     This class is instantiated for each author and retrieves each poem available
@@ -150,11 +157,24 @@ class ScrapPoemsURLs:
         }
         self.data = []
 
-        for dic_data in self.iterator:
-            url = PoesiasPage.get_url_base() + "/" + dic_data["auth_url"]
-            self.__get_poems_url(url)
-            self.__get_poems(dic_data["auth_name"], dic_data["poem_title"])
-            sleep(1)
+        try:
+            for dic_data in self.iterator:
+                url = PoesiasPage.get_url_base() + "/" + dic_data["auth_url"]
+                self.__get_poems_url(url)
+                self.__get_poems(dic_data["auth_name"], dic_data["poem_title"])
+                sleep(1)
+
+        except KeyboardInterrupt:
+            Logger.info("Program stopped. Graceful stopping...")
+            self.saver.save(self.data)
+            self.data = []
+            sys.exit(2)
+        except Exception as e:
+            Logger.error(e)
+
+        finally:
+            self.saver.save(self.data)
+            self.data = []
 
     def __get_poems_url(self, url):
         """
@@ -191,10 +211,6 @@ class ScrapPoemsURLs:
             if len(self.data) > 100:
                 self.saver.save(self.data)
                 self.data = []
-
-        if len(self.data) > 0:
-            self.saver.save(self.data)
-            self.data = []
 
 
 class ScrapAuthors:

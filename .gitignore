@@ -134,3 +134,4 @@ dmypy.json
 *dataset.json
 *cleaned.json
 *saves.json
+*.pt

@@ -1,11 +1,34 @@
-import torch
 from fastapi import FastAPI
+from pydantic import BaseModel
 
-model = torch.load("./model/spanish_poems_model.pt").to("cpu")
+from model.poem_generator import PoemGenerator
+
+pgen = PoemGenerator("./model/spanish_poems_model.pt")
 
 app = FastAPI()
 
 
+class PoemRequest(BaseModel):
+    text: str
+    entry_count: int
+    entry_length: int
+    temperature: float
+    top_p: float
+
+
+class PoemResponse(BaseModel):
+    original_text: str = "Something bad Happened"
+    generated: list = []
+
+
 @app.post("/")
-async def poem_maker():
-    return {"message": "Hello World"}
+async def poem_maker(poem_params: PoemRequest) -> PoemResponse:
+
+    poem = pgen.generate(poem_params.text, entry_count=poem_params.entry_count, entry_length=poem_params.entry_length,
+                         temperature=poem_params.temperature, top_p=poem_params.top_p)
+
+    response = PoemResponse()
+    response.original_text = poem_params.text
+    response.generated = poem
+
+    return response

@@ -100,7 +100,6 @@ class Poem:
             Logger.error(e)
             PoesiasPage.update_session()
             self.__get_page(url)
-        sleep(1)
 
     def __get_poem_from_page(self, auth, title):
         """
@@ -123,6 +122,7 @@ class Poem:
             poem = re.sub(r"(?:<SALTO>){2}", "<SALTO>", poem)
 
             self.poem_data["auth_name"] = auth
+       
             self.poem_data["poem_title"] = title
             self.poem_data["poem"] = poem
 

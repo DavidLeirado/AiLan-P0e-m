@@ -27,11 +27,11 @@ header = html.Div(style=header_style, children=[
 ])
 
 body = html.Div([
-    html.Div(children=sliders_elements, style={'padding': 10, 'flex': 1}),
+    html.Div(children=sliders_elements, style={'padding': 50, 'flex': 1}),
     html.Div(children=[
         html.Label('Fragmento de input'),
         dcc.Textarea(style=text_area)
-    ], style={'padding': 10, 'flex': 1})
+    ], style={'padding': 50, 'flex': 1})
 ], style=body_style)
 
 components = [header, body]

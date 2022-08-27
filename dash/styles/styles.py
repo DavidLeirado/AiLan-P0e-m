@@ -5,7 +5,7 @@ colors = {
 }
 fonts = ["Montserrat", "Helvetica"]
 
-header_style = {'backgroundColor': colors['header_background'], 'font-family':fonts}
+header_style = {'backgroundColor': colors['header_background'], 'font-family':fonts, "padding":15}
 header_text_style = {'textAlign': 'center', 'color': colors['text']}
 div_header_child_style = {'textAlign': 'center', 'color': colors['text']}
 text_area = {'width': '100%', 'height': 300}

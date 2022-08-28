@@ -18,7 +18,7 @@ app = FastAPI()
 
 
 class PoemRequest(BaseModel):
-    name: str
+    name: str = ""
     text: str
     entry_count: int
     entry_length: int

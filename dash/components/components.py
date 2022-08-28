@@ -34,6 +34,10 @@ body = html.Div([
     ], style={'padding': 50, 'flex': 1})
 ], style=body_style)
 
-components = [header, body]
+footer = html.Div(style=under_div_style, children=[
+    html.Button("Generar", style=button_style)
+])
 
-page = html.Div(children=components, style={'color': "#111111"})
+components = [header, body, footer]
+
+page = html.Div(children=components, style={'color': "#111111", "heigth":"100vh", "width":"100vw"})

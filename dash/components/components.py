@@ -1,12 +1,11 @@
+from dash import html, dcc, Input, Output, State
 from styles.styles import *
 
-from dash import html, dcc
 
-
-def sliders(label, min, max, step, marks, value):
+def sliders(label, min, max, step, marks, value, id_name):
     br = html.Br()
     label = html.Label(label)
-    slider = dcc.Slider(min=min, max=max, step=step, marks={i: str(i) for i in marks}, value=value)
+    slider = dcc.Slider(id=id_name, min=min, max=max, step=step, marks={i: str(i) for i in marks}, value=value)
     return [br, label, slider]
 
 
@@ -14,10 +13,10 @@ low_marks = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 generations = [1, 2, 3, 4, 5]
 high_marks = [20, 30, 40, 50, 60]
 
-top_p_slider = sliders("Top_P", 0.1, 1.0, 0.1, low_marks, 0.8)
-temperature_slider = sliders("Temperature", 0.1, 1.0, 0.1, low_marks, 1.0)
-output_length = sliders("Poem Length", 20, 60, 10, high_marks, 30)
-options_number = sliders("Number of poems", 1, 5, 1, generations, 1)
+top_p_slider = sliders("Top_P", 0.1, 1.0, 0.1, low_marks, 0.8, "top-p")
+temperature_slider = sliders("Temperature", 0.1, 1.0, 0.1, low_marks, 1.0, "temp")
+output_length = sliders("Poem Length", 20, 60, 10, high_marks, 30, "poem-length")
+options_number = sliders("Number of poems", 1, 5, 1, generations, 1, "n-poems")
 
 sliders_elements = top_p_slider + temperature_slider + output_length + options_number
 
@@ -34,10 +33,25 @@ body = html.Div([
     ], style={'padding': 50, 'flex': 1})
 ], style=body_style)
 
-footer = html.Div(style=under_div_style, children=[
-    html.Button("Generar", style=button_style)
+button = html.Div(style=under_div_style, children=[
+    html.Button("Generar", id="submit-button", style=button_style, n_clicks=0),
 ])
 
-components = [header, body, footer]
+footer = html.Div(id="my-poems")
 
-page = html.Div(children=components, style={'color': "#111111", "heigth":"100vh", "width":"100vw"})
+
+@app.callback(
+    Output('my-poems', 'children'),
+    Input('submit-val', 'n_clicks'),
+    State('submit-button', 'n_clicks')
+)
+def generate_poems(n_clicks, value):
+    return 'The input value was "{}" and the button has been clicked {} times'.format(
+        value,
+        n_clicks
+    )
+
+
+components = [header, body, button, footer]
+
+page = html.Div(children=components, style={'color': "#111111", "heigth": "100vh", "width": "100vw"})

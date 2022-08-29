@@ -1,4 +1,8 @@
 from dash import Dash, html, dcc, Output, Input, State
+from dash.exceptions import PreventUpdate
+import requests
+import json
+
 from styles.styles import *
 
 app = Dash(__name__)
@@ -31,7 +35,8 @@ body = html.Div([
     html.Div(children=sliders_elements, style={'padding': 50, 'flex': 1}),
     html.Div(children=[
         html.Label('Fragmento de input'),
-        dcc.Textarea(style=text_area)
+        dcc.Textarea(style=text_area, id="input-text",
+                     value="Esto es un ejemplo\ndel input que debes dar\nsustituye estas líneas\npor tu poema")
     ], style={'padding': 50, 'flex': 1})
 ], style=body_style)
 
@@ -39,7 +44,7 @@ button = html.Div(style=under_div_style, children=[
     html.Button("Generar", id="submit-button", style=button_style, n_clicks=0),
 ])
 
-footer = html.Div(id="my-poems")
+footer = html.Div(id="my-poems", style=body_style)
 
 
 @app.callback(
@@ -48,11 +53,30 @@ footer = html.Div(id="my-poems")
     State('top-p', 'value'),
     State('temp', 'value'),
     State('poem-length', 'value'),
-    State('n-poems', 'value')
+    State('n-poems', 'value'),
+    State('input-text', 'value')
 )
-def generate_poems(n_clicks, top_p, temp, poem_length, n_poems):
-    string = f"{top_p}, {temp}, {poem_length}, {n_poems}"
-    return string
+def generate_poems(n_clicks, top_p, temp, poem_length, n_poems, text):
+    if n_clicks == 0:
+        raise PreventUpdate
+
+    gen_request_data = {
+        "text": text,
+        "entry_count": n_poems,
+        "entry_length": poem_length,
+        "temperature": temp,
+        "top_p": top_p
+    }
+    res = requests.post("http://127.0.0.1:8000",json=gen_request_data)
+    returning = []
+    for response_poem in json.loads(res.text)["generated"]:
+        poem = []
+        for i in response_poem.split("\n"):
+            poem.append(i)
+            poem.append(html.Br())
+        poem.pop()
+        returning.append(html.Div(html.P(children=poem), style={'padding': 50, 'flex': 1, "textAlign":"center"}))
+    return returning
 
 
 components = [header, body, button, footer]

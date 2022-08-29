@@ -1,0 +1,8 @@
+services:
+  dash_poems_gen:
+    build:
+      context: ./dash
+    ports:
+      - "8050:8050"
+    container_name: poems-generator-dash-frontend
+    restart: always

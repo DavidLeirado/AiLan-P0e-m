@@ -86,4 +86,4 @@ page = html.Div(children=components, style={'color': "#111111", "heigth": "100vh
 app.layout = page
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(host="0.0.0.0", debug=True)

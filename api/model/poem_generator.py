@@ -7,7 +7,10 @@ from transformers import GPT2Tokenizer
 class PoemGenerator:
 
     def __init__(self, model_path, tokenizer='DeepESP/gpt2-spanish', device="cpu"):
-        self.model = torch.load(model_path).to(device)
+        if not torch.cuda.is_available():
+            self.model = torch.load(model_path, map_location=torch.device('cpu')).to(device)
+        else:
+            self.model = torch.load(model_path).to(device)
         self.tokenizer = GPT2Tokenizer.from_pretrained(tokenizer)
 
     def generate(self, prompt, entry_count=5, entry_length=30, top_p=0.8, temperature=1., ):

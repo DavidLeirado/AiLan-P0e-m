@@ -6,3 +6,12 @@ services:
       - "8050:8050"
     container_name: poems-generator-dash-frontend
     restart: always
+
+
+  api_poems_gen:
+    build:
+      context: ./
+      dockerfile: ./api/Dockerfile
+    container_name: poems-generator-fastapi-api
+    restart: always
+    hostname: api

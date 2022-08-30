@@ -67,7 +67,7 @@ def generate_poems(n_clicks, top_p, temp, poem_length, n_poems, text):
         "temperature": temp,
         "top_p": top_p
     }
-    res = requests.post("http://127.0.0.1:8000",json=gen_request_data)
+    res = requests.post("http://api:8000",json=gen_request_data)
     returning = []
     for response_poem in json.loads(res.text)["generated"]:
         poem = []

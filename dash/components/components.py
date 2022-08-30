@@ -9,7 +9,7 @@ def sliders(label, min, max, step, marks, value, id_name):
     return [br, label, slider]
 
 
-low_marks = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+low_marks = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 generations = [1, 2, 3, 4, 5]
 high_marks = [20, 30, 40, 50, 60]
 
@@ -29,7 +29,8 @@ body = html.Div([
     html.Div(children=sliders_elements, style={'padding': 50, 'flex': 1}),
     html.Div(children=[
         html.Label('Fragmento de input'),
-        dcc.Textarea(style=text_area)
+        dcc.Textarea(style=text_area, id="input-text",
+                     value="Esto es un ejemplo\ndel input que debes dar\nsustituye estas líneas\npor tu poema")
     ], style={'padding': 50, 'flex': 1})
 ], style=body_style)
 
@@ -37,20 +38,7 @@ button = html.Div(style=under_div_style, children=[
     html.Button("Generar", id="submit-button", style=button_style, n_clicks=0),
 ])
 
-footer = html.Div(id="my-poems")
-
-
-@app.callback(
-    Output('my-poems', 'children'),
-    Input('submit-val', 'n_clicks'),
-    State('submit-button', 'n_clicks')
-)
-def generate_poems(n_clicks, value):
-    return 'The input value was "{}" and the button has been clicked {} times'.format(
-        value,
-        n_clicks
-    )
-
+footer = html.Div(id="my-poems", style=body_style)
 
 components = [header, body, button, footer]
 

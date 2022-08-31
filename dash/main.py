@@ -6,7 +6,8 @@ from dash.exceptions import PreventUpdate
 
 from components.components import *
 
-app = Dash(__name__)
+external_stylesheets=["./assets/reset.css"]
+app = Dash(__name__, external_stylesheets=external_stylesheets)
 
 
 @app.callback(
@@ -37,7 +38,7 @@ def generate_poems(n_clicks, top_p, temp, poem_length, n_poems, text):
             poem.append(i)
             poem.append(html.Br())
         poem.pop()
-        returning.append(html.Div(html.P(children=poem), className="poem-generated", style={"animation-name":"fade"}))
+        returning.append(html.Div(html.P(children=poem), className="poem-generated"))
     return returning
 
 
@@ -46,6 +47,8 @@ components = [header, subheader, body, button, footer]
 page = html.Div(children=components, style={'color': "#111111", "heigth": "100%", "width": "100%"})
 
 app.layout = page
+app.css.config.serve_locally = False
+
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")

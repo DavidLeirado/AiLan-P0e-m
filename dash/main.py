@@ -37,15 +37,15 @@ def generate_poems(n_clicks, top_p, temp, poem_length, n_poems, text):
             poem.append(i)
             poem.append(html.Br())
         poem.pop()
-        returning.append(html.Div(html.P(children=poem), style={'padding': 50, 'flex': 1, "textAlign": "center"}))
+        returning.append(html.Div(html.P(children=poem), className="poem-generated", style={"animation-name":"fade"}))
     return returning
 
 
-components = [header, body, button, footer]
+components = [header, subheader, body, button, footer]
 
-page = html.Div(children=components, style={'color': "#111111", "heigth": "100vh", "width": "100vw"})
+page = html.Div(children=components, style={'color': "#111111", "heigth": "100%", "width": "100%"})
 
 app.layout = page
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")

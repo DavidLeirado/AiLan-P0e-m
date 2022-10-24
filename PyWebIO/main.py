@@ -45,4 +45,4 @@ async def main():
     put_button("Volver a generar!", onclick=lambda: run_js('window.location.reload()'))
 
 if __name__ == '__main__':
-    pywebio.start_server(main, port=8080, debug=bool(int(os.environ.get("DEBUG", 1))))
+    pywebio.start_server(main, port=8081, debug=bool(int(os.environ.get("DEBUG", 1))), host="0.0.0.0", allowed_origins=["*"])

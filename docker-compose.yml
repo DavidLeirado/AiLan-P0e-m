@@ -1,11 +1,11 @@
 services:
-  dash_poems_gen:
-    build:
-      context: ./dash
-    ports:
-      - "8050:8050"
-    container_name: poems-generator-dash-frontend
-    restart: always
+  #dash_poems_gen:
+  #  build:
+  #    context: ./dash
+  #  ports:
+  #    - "8050:8050"
+  #  container_name: poems-generator-dash-frontend
+  #  restart: always
 
 
   api_poems_gen:
@@ -13,5 +13,18 @@ services:
       context: ./
       dockerfile: ./api/Dockerfile
     container_name: poems-generator-fastapi-api
+    ports:
+      - "8000:8000"
     restart: always
     hostname: api
+
+  pywebio:
+    build:
+      context: ./
+      dockerfile: ./PyWebIO/Dockerfile
+    container_name: poems-generator-pywebio
+    ports:
+      - "8001:8001"
+    restart: always
+    env_file:
+      - ".env"

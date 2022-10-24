@@ -15,3 +15,5 @@ services:
     container_name: poems-generator-fastapi-api
     restart: always
     hostname: api
+    ports:
+      - "8000:8000"

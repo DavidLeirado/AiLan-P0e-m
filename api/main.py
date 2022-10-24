@@ -31,7 +31,7 @@ class PoemResponse(BaseModel):
     generated: list = []
 
 
-@app.post("/")
+@app.post("/generate-poem")
 async def poem_maker(request: Request, poem_params: PoemRequest) -> PoemResponse:
     Logger.info(f"IP: {request.client.host} - Name: {poem_params.name}")
     poem = pgen.generate(poem_params.text, entry_count=poem_params.entry_count, entry_length=poem_params.entry_length,

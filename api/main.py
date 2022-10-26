@@ -19,11 +19,11 @@ app = FastAPI()
 
 class PoemRequest(BaseModel):
     name: str = ""
-    text: str
-    entry_count: int
-    entry_length: int
-    temperature: float
-    top_p: float
+    text: str = ""
+    entry_count: int = 1
+    entry_length: int = 60
+    temperature: float = 1.0
+    top_p: float = 0.8
 
 
 class PoemResponse(BaseModel):
